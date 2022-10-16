@@ -1,52 +1,53 @@
-deutschland = [(0,1),(0,2),(0,3),
-               (1,3),
-               (2,3),(2,4),
-               (3,5),(3,7),(3,8),(3,9),(3,10),
-               (4,6),(4,9),(4,12),
-               (7,8),(7,11),
-               (8,10),(8,11),(8,13),(8,14),
-               (9,10),(9,12),
-               (10,12),(10,14),
-               (11,15),(11,13),
-               (12,14),
-               (13,14)]
+deutschland = [(0,1),(0,2),(0,3),              # 0: Schleswig-Holstein
+               (1,3),                          # 1: Hamburg
+               (2,3),(2,4),                    # 2: Mecklenburg-Vorpommern
+               (3,5),(3,7),(3,8),(3,9),(3,10), # 3: Niedersachesn
+               (4,6),(4,9),(4,12),             # 4: Brandenburg
+                                               # 5: Bremen
+                                               # 6: Berlin
+               (7,8),(7,11),                   # 7: NRW
+               (8,10),(8,11),(8,13),(8,14),    # 8: Hessen
+               (9,10),(9,12),                  # 9: Sachsen-Anhalt
+               (10,12),(10,14),                # 10: Thüringen
+               (11,15),(11,13),                # 11: Rheinland-Pfalz
+               (12,14),                        # 12: Sachsen
+               (13,14)                         # 13: Baden-Würtemberg
+                                               # 14: Bayern
+                                               # 15: Saarland
+              ]
+
+farben2 = ['rot','gelb']
+farben3 = ['rot','gelb','blau']
+farben4 = ['rot','gelb','blau','gruen']
+farben5 = ['rot','gelb','blau','gruen','orange']
 
 def gueltige_faerbung(faerbung,karte):
-    for land0,land1 in karte:
-        if land0<len(faerbung) and land1<len(faerbung) and faerbung[land0]==faerbung[land1]:
-            return False
-    return True 
+        for land_1,land_2 in karte:
+            if land_2<len(faerbung) and land_1<len(faerbung) and faerbung[land_1]==faerbung[land_2]:
+                return False
+        return True
 
-def naechste_faerbungen(faerbung,farben):
+def naechste_faerbung(faerbung,farben):
     naechste = []
     for farbe in farben:
         naechste.append(faerbung+[farbe])
-    return naechste 
+    return naechste
 
 def faerbe(karte,laenderanzahl,farben):
-    return versuche_faerben(karte,laenderanzahl,farben,[])
+    loesungen = []
+    anzahl = loesen(karte,laenderanzahl,farben,[],loesungen)
+    return loesungen,anzahl
 
-def versuche_faerben(karte,laenderanzahl,farben,faerbung):
+def loesen(karte,laenderanzahl,farben,faerbung,loesungen):
     if len(faerbung)==laenderanzahl:
-        return faerbung 
+        loesungen += [faerbung]
+        return 1
     else:
-        for naechste in naechste_faerbungen(faerbung,farben):
-            if gueltige_faerbung(naechste,karte):
-                ergebnis = versuche_faerben(karte,laenderanzahl,farben,naechste)
-                if ergebnis:
-                    return ergebnis
-        return None
+        anzahl = 0
+        for vorschlag in naechste_faerbung(faerbung,farben):
+            if gueltige_faerbung(vorschlag,karte):
+                anzahl += loesen(karte,laenderanzahl,farben,vorschlag,loesungen)
 
-farben5 = ['rot','gelb','blau','gruen','orange']
-print(faerbe(deutschland,16,farben5))
+        return anzahl
 
-# Adjazenzmatrix
-               #0 1 2 3 4
-nordlaender = [[0,1,1,1,0], #0
-               [1,0,0,1,0], #1
-               [1,0,0,1,0], #2
-               [1,1,1,0,1], #3
-               [0,0,0,1,0]] #4
-
-# Adjeszenzliste
-nordlaender = {0: [1,2,3], 1: [0,3], 2: [0,3], 3: [0,1,2,4], 4: [3]} 
+print(faerbe(deutschland,16,farben4))
